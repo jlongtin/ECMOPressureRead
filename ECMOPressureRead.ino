@@ -49,18 +49,18 @@ void setup() {
 }
 
 void loop() {
-    SPI.beginTransaction(SPISettings(400000, MSBFIRST, SPI_MODE0));
+    SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE3));
   // take the SS pin low to select the chip:
   digitalWrite(slaveSelectPin, LOW);
   delayMicroseconds(5);
  // delay(100);
   // send in the address and value via SPI:
- // SPI.transfer(p,4);  // transfer 4 bytes
+  SPI.transfer(p,4);  // transfer 4 bytes
   
-    rxP1 = SPI.transfer(0x01);
-    rxP2 = SPI.transfer(0x02);
-    rxP3 = SPI.transfer(0x03);
-    rxP4 = SPI.transfer(0x04);
+    // rxP1 = SPI.transfer(0x01);
+    // rxP2 = SPI.transfer(0x02);
+    // rxP3 = SPI.transfer(0x03);
+    // rxP4 = SPI.transfer(0x04);
   delayMicroseconds(5);
  
  // delay(100);
@@ -76,19 +76,19 @@ void loop() {
   
 
 
-  //  for (int i=0; i<4; i++){
-  //      Serial.print(p[i],HEX);
-  //      Serial.print(", ");
-  //  }
-  //  Serial.println();
+   for (int i=0; i<4; i++){
+       Serial.print(p[i],HEX);
+       Serial.print(", ");
+   }
+   Serial.println();
   SPI.endTransaction();
   
-  Serial.print(rxP1,HEX); Serial.print(", ");
-  Serial.print(rxP2,HEX); Serial.print(", ");
-  Serial.print(rxP3,HEX); Serial.print(", ");
-  Serial.print(rxP4,HEX); Serial.print(", ");
-  Serial.print(rxP1*0xFF+rxP2);
-  Serial.println();
+  // Serial.print(rxP1,HEX); Serial.print(", ");
+  // Serial.print(rxP2,HEX); Serial.print(", ");
+  // Serial.print(rxP3,HEX); Serial.print(", ");
+  // Serial.print(rxP4,HEX); Serial.print(", ");
+  // Serial.print(rxP1*0xFF+rxP2);
+  // Serial.println();
 
   delay(1000);
 }
