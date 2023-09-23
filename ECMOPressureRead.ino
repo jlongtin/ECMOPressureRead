@@ -33,18 +33,19 @@
 
 // set pin 10 as the slave select for the digital pot:
 const int slaveSelectPin = 10;
-uint16_t rxP;
+uint8_t rxP1,rxP2,rxP3,rxP4;
+uint16_t p2;
 uint8_t p[4];
 
 
 void setup() {
   // set the slaveSelectPin as an output:
   Serial.begin(115200);
- // pinMode(slaveSelectPin, OUTPUT);
+  pinMode(slaveSelectPin, OUTPUT);
   // initialize SPI:
   SPI.begin();
  // SPI.beginTransaction(SPISettings(100000, MSBFIRST, SPI_MODE0));
-  pinMode(11,INPUT);
+ // pinMode(11,INPUT);
 }
 
 void loop() {
@@ -54,16 +55,18 @@ void loop() {
   delayMicroseconds(5);
  // delay(100);
   // send in the address and value via SPI:
-  SPI.transfer(p,4);  // transfer 4 bytes
+ // SPI.transfer(p,4);  // transfer 4 bytes
   
-  //  rxP = SPI.transfer(0x0000);
+    rxP1 = SPI.transfer(0x01);
+    rxP2 = SPI.transfer(0x02);
+    rxP3 = SPI.transfer(0x03);
+    rxP4 = SPI.transfer(0x04);
   delayMicroseconds(5);
  
  // delay(100);
   // take the SS pin high to de-select the chip:
   digitalWrite(slaveSelectPin, HIGH);
   
-  //Serial.print(rxP);
 
 //  Serial.print("0x");
 //     Serial.print(n < 16 ? "0" : "");
@@ -71,12 +74,21 @@ void loop() {
 //     Serial.print(" ");
 
   
-   for (int i=0; i<4; i++){
-       Serial.print(p[i],HEX);
-       Serial.print(", ");
-   }
-   Serial.println();
+
+
+  //  for (int i=0; i<4; i++){
+  //      Serial.print(p[i],HEX);
+  //      Serial.print(", ");
+  //  }
+  //  Serial.println();
   SPI.endTransaction();
+  
+  Serial.print(rxP1,HEX); Serial.print(", ");
+  Serial.print(rxP2,HEX); Serial.print(", ");
+  Serial.print(rxP3,HEX); Serial.print(", ");
+  Serial.print(rxP4,HEX); Serial.print(", ");
+  Serial.print(rxP1*0xFF+rxP2);
+  Serial.println();
 
   delay(1000);
 }
