@@ -28,6 +28,7 @@
 
 
 // include the SPI library:
+#include "PressureSensorClass.h"
 #include <SPI.h>
 
 
@@ -36,6 +37,8 @@ const int slaveSelectPin = 10;
 uint8_t rxP1,rxP2,rxP3,rxP4;
 uint16_t p2;
 uint8_t p[4];
+
+ELVHPressureSensor dp(10, 250, mbar);  // define differnetial pressure sensor
 
 
 void setup() {
@@ -49,39 +52,7 @@ void setup() {
 }
 
 void loop() {
-    SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE3));
-  // take the SS pin low to select the chip:
-  digitalWrite(slaveSelectPin, LOW);
-  delayMicroseconds(5);
- // delay(100);
-  // send in the address and value via SPI:
-  SPI.transfer(p,4);  // transfer 4 bytes
   
-    // rxP1 = SPI.transfer(0x01);
-    // rxP2 = SPI.transfer(0x02);
-    // rxP3 = SPI.transfer(0x03);
-    // rxP4 = SPI.transfer(0x04);
-  delayMicroseconds(5);
- 
- // delay(100);
-  // take the SS pin high to de-select the chip:
-  digitalWrite(slaveSelectPin, HIGH);
-  
-
-//  Serial.print("0x");
-//     Serial.print(n < 16 ? "0" : "");
-//     Serial.print(n, HEX);
-//     Serial.print(" ");
-
-  
-
-
-   for (int i=0; i<4; i++){
-       Serial.print(p[i],HEX);
-       Serial.print(", ");
-   }
-   Serial.println();
-  SPI.endTransaction();
   
   // Serial.print(rxP1,HEX); Serial.print(", ");
   // Serial.print(rxP2,HEX); Serial.print(", ");

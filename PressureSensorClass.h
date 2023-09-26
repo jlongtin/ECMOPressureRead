@@ -12,56 +12,43 @@
 
 #ifndef PressureClass_h
 #define PressureClass__h
+#include <SPI.h>
 #include "Arduino.h"
 
-enum  pUnit  {mmHg, mmH2O, inH2O, ftH2O, Pa, kPa, psi, bar, atm};
+enum  pressureUnit  {mmHg, mmH2O, inH2O, ftH2O, Pa, kPa, psi, bar, mbar, atm, Torr}; //TOD: enum class??  Place inside of ELVH.. clas??
 
-const uint32_t minTimeElapse = 1000;  // minimum time to elapse before requesting another reading. Ensures pressure sensor has time to cycle.
+class ELVHPressureSensor {
 
-const float xPa = 1.0;  // base pressure stored as Pa
-const float xkPa = 0.001;
-const float xmmHg = 0.0;
-const float xmmH2O = 0.0;
-const float xpsi = 0.0;
-const float xbar = 0.0;
-const float xatm = 0.0;
+  enum  Status {       // status flag definition.  Assume this holds for ELVH series
+      CURRENT     = 0,
+      RESERVED    = 1,
+      STALE_DATA  = 2,
+      ERROR       = 3,
+    };
 
+  private: 
+      const uint32_t minTimeElapse = 1000;  // minimum time to elapse before requesting another reading. Ensures pressure sensor has time to cycle.
+      uint8_t           CSpin_;
+      uint32_t          lastReadTime_ = 0;
+      pressureUnit      pUnit_;
+      float             pMax_;     // TODO: can I make this a constant?
+      uint16_t          Traw_;     // sensor temperature, raw value from sensor
+      uint16_t          Praw_;     // sensor pressure, raw value from sensor
+      uint8_t           flag_;     // sensor read flag 
 
-/*
-
-class EVHPressureSensor {
-
-  private:
-  
-    uint8_t _CSpin;
-    uint32_t _lastReadTime = 0;
-    enum unit (Pa, mmHg,psi,)
+      float convert2Pa(float, pressureUnit);  // converts argument of unit supplied to Pa
+    
   public:
-  
 
-  void EVHPressurSensor ((uint8_t CSpin){
-    
-    _CSPin = CSpin;
-     //setup SPI 
-  }
-
-  void getTemp(void){
-
-  //read temperature    uint8_t p[4];  // buffer to read 4 bytes
-    
-    if ((millis() - lastReadTime) > 500){
-      // get fresh reading
+    ELVHPressureSensor (uint8_t pin, float pmax, pressureUnit pu) : CSpin_{pin}, pMax_{pmax}, pUnit_{pu}{
+        // empty constructor
     }
-
-    return _Temp;
-    lastReadTime = millis();  //last read time
-  }
-
-}
-
-*/
+    void readPressureSensor(void); 
+};
 
 #endif
+
+
 
 
 
