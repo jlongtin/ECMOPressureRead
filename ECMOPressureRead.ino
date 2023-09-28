@@ -44,7 +44,6 @@ ELVHPressureSensor dp(10, 250, mbar);  // define differnetial pressure sensor
 void setup() {
   // set the slaveSelectPin as an output:
   Serial.begin(115200);
-  pinMode(slaveSelectPin, OUTPUT);
   // initialize SPI:
   SPI.begin();
  // SPI.beginTransaction(SPISettings(100000, MSBFIRST, SPI_MODE0));
@@ -53,7 +52,12 @@ void setup() {
 
 void loop() {
   
-  
+   dp.readPressureSensor();
+   Serial.print(dp.convertPressure(inH2O)-0.1226,4);
+   Serial.print(" psi, ");
+   Serial.print(dp.convertTemperature(),1);
+   Serial.print(" C, ");
+   Serial.println(dp.getFlag());
   // Serial.print(rxP1,HEX); Serial.print(", ");
   // Serial.print(rxP2,HEX); Serial.print(", ");
   // Serial.print(rxP3,HEX); Serial.print(", ");
