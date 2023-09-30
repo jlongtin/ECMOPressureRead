@@ -8,15 +8,14 @@ void ELVHPressureSensor::readPressureSensor(void){
     digitalWrite(CSpin_, LOW);
     delayMicroseconds(10);  // spec sheet for similar pressure sensor says wait 8 us
     SPI.transfer(p,4);  // transfer 4 bytes into p
-    flag_= (p[0] && 0b11000000)>>6; // highest two bits are flag status; preserve them, then shift left so flag in [0-3]
-    pRaw_ = ((uint16_t)(p[0] & 0b00111111) << 8) | (uint16_t)(p[1]);
-    Traw_ = ((uint16_t)(p[2]) << 3) | ((uint16_t)(p[3] & 0b11100000) >> 5);
+    flag_ = (p[0] && 0b11000000)>>6; // highest two bits are flag status; preserve them, then shift left so flag in [0-3]
+    pRaw_ = ((uint16_t)(p[0] & 0b00111111) << 8) | (uint16_t)(p[1]);  // raw pressure is next 14 bits. after stripping flag
+    Traw_ = ((uint16_t)(p[2]) << 3) | ((uint16_t)(p[3] & 0b11100000) >> 5); // then temperature is next 5 bits
     delayMicroseconds(5);
-    digitalWrite(CSpin_, HIGH);
+    digitalWrite(CSpin_, HIGH);1
     SPI.endTransaction();
 }
 
- 
 float ELVHPressureSensor::convert2Pa(float p, pressureUnit pUnit){
 // converts p in units of 'pUnit' to Pa
 // can be used as 1/x, i.e., in denominator to convert from Pa to pUnit
@@ -59,45 +58,31 @@ float ELVHPressureSensor::convert2Pa(float p, pressureUnit pUnit){
   }
 }
 
+float ELVHPressureSensor::convertPressure(pressureUnit pu) {  // returns pressure in pressure units pu
   // Convert a raw digital pressure read from the sensor to a floating point value in PSI.
-  float ELVHPressureSensor::convertPressure(pressureUnit pu) {  // returns pressure in pressure units pu
-    float tmpP;
-    // Based on the following formula in the datasheet:
-    //     Pressure(psi) = 1.25 x ((P_out_dig - OS_dig) / 2^14) x FSS(psi)
-    //return 1.25 * (((float) pRaw_ - pressure_zero_ref) / FULL_SCALE_REF) * pMax_;
-    
-    //tmpP =  (((float) (pRaw_ - pressure_zero_ref)) / FULL_SCALE_REF) * pMax_;  // pressure in Pa
-    tmpP =  1.25*((float) pRaw_ - (float) pressure_zero_ref) / FULL_SCALE_REF * pMax_;  // pressure in Pa. Not sure why 1.25 is needed
-    
-  
-    //return tmpP/100; 
-    // return tmpP/convert2Pa(tmpP,pu);
-    return tmpP/convert2Pa(1.,pu);
-  }
-  
+  // Based on the following formula in the datasheet: Pressure(units) = 1.25 x ((P_out_dig - OS_dig) / 2^14) x FSS(units)
+  float tmpP =  1.25*((float) pRaw_ - (float) pressure_zero_ref) / FULL_SCALE_REF * pMax_;  // pressure in Pa. Not sure why 1.25 is needed
+  return tmpP/convert2Pa(1.,pu);
+}
+
+float ELVHPressureSensor::convertTemperature(void) {
   // Convert a raw digital temperature read from the sensor to a floating point value in Celcius.
-  float ELVHPressureSensor::convertTemperature(void) {
-    // Based on the following formula in the datasheet:
-    //     Temperature(degC) = T_out_dig x (200 / 2^11 - 1) - 50
-    return Traw_ * (200.0 / 2047.0) - 50.0;  //degC
-    // convert temperture here, when feature added
-  }
+  // Based on the following formula in the datasheet: Temperature(degC) = T_out_dig x (200 / 2^11 - 1) - 50
+  return Traw_ * (200.0 / 2047.0) - 50.0;  //degC
+  // convert temperture here, when feature added
+}
 
-/*
-  float getTemp(void){
+float ELVHPressureSensor::getP(pressureUnit pu ){     // does a fresh read of sensor
+  ELVHPressureSensor::readPressureSensor();
+  return ELVHPressureSensor::convertPressure(pu);     // return pressure in units pu
+}
 
-  //read temperature    uint8_t p[4];  // buffer to read 4 bytes
-    
-    if ((millis() - lastReadTime_) > 500){
-      // get fresh reading
-      readPressureSensor();
-    }
+float ELVHPressureSensor::getT(void) {                // does a fresh read of sensor
+  ELVHPressureSensor::readPressureSensor();
+  return ELVHPressureSensor::convertTemperature();    // return temperature in degC
+}
 
-    
-    return Traw_;
-    lastReadTime_ = millis();  //last read time
-  }
 
-};
-
-*/
+uint8_t ELVHPressureSensor::getFlag(void) {           // does NOT do a fresh read of sensor; reports last flag
+  return flag_;
+}

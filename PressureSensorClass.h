@@ -42,23 +42,21 @@ class ELVHPressureSensor {
 
 
   // function prototypes
+      void  readPressureSensor(void); 
       float convert2Pa(float, pressureUnit);  // converts argument of unit supplied to Pa
+      float convertPressure(pressureUnit);    // converts pressure from Pa to provided unit
+      float convertTemperature(void);         // converts raw temperature 
     
   public:
-      float convertPressure(pressureUnit);
-      float convertTemperature(void);
-      void readPressureSensor(void); 
+      float getP(pressureUnit);
+      float getT();
+      uint8_t getFlag();
 
     ELVHPressureSensor (uint8_t pin, float pmax, pressureUnit pu) : CSpin_{pin}, pUnit_{pu}{
         // empty constructor
           pinMode(pin, OUTPUT);  // CS pin needs to be an output
           pMax_ = 2*convert2Pa(pmax,pu);  // convert maximum pressure range to Pa.  Multiply by 2 as we have a differential pressure sensor
     }
-
-    uint8_t getFlag(void){
-      return flag_;
-    }
-
 };
 
 #endif

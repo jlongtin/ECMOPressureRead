@@ -38,12 +38,18 @@ uint8_t rxP1,rxP2,rxP3,rxP4;
 uint16_t p2;
 uint8_t p[4];
 
-ELVHPressureSensor dp(10, 250, mbar);  // define differnetial pressure sensor
+ELVHPressureSensor dp(8, 250, mbar);  // define differnetial pressure sensor
+ELVHPressureSensor P1(10, 5, psi);  // define differnetial pressure sensor
+
 
 
 void setup() {
   // set the slaveSelectPin as an output:
   Serial.begin(115200);
+  pinMode (8,OUTPUT);
+  digitalWrite(8,HIGH);
+  pinMode (10,OUTPUT);
+  digitalWrite(10,HIGH);
   // initialize SPI:
   SPI.begin();
  // SPI.beginTransaction(SPISettings(100000, MSBFIRST, SPI_MODE0));
@@ -52,13 +58,15 @@ void setup() {
 
 void loop() {
   
-   dp.readPressureSensor();
-   Serial.print(dp.convertPressure(inH2O)-0.1226,4);
-   Serial.print(" psi, ");
-   Serial.print(dp.convertTemperature(),1);
-   Serial.print(" C, ");
-   Serial.println(dp.getFlag());
-  // Serial.print(rxP1,HEX); Serial.print(", ");
+   Serial.print("dP:");
+   Serial.print(dp.getP(mbar)-0.1226,4);
+   Serial.print(", P1:");
+   delay(10);  // wait just a bit
+   Serial.print(P1.getP(psi),4);
+  // Serial.print(", dp_T: ");
+  // Serial.print(dp.convertTemperature(),1);
+   //Serial.print(rxP1,HEX); Serial.print(", ");
+   Serial.println();
   // Serial.print(rxP2,HEX); Serial.print(", ");
   // Serial.print(rxP3,HEX); Serial.print(", ");
   // Serial.print(rxP4,HEX); Serial.print(", ");
