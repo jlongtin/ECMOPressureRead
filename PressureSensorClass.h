@@ -1,14 +1,16 @@
-/*
+/*********************************************************************************
   ELVH Pressure Sensor Reading Library 
 
   SPI read of ELVH pressure sensors
 
+  ECMO VIP Team - Stony Brook University
+
   Notes:
     1. Does NOT workw ith Arduino Uno R3 --- mangles MISO line.  Uno R4 does not work at all.
+       FIXED! MISO line, not MOSI line required. 
     2. Need to use SPI Mode 3, not default, to properly recored signals.
     3. Sensors are read-only.  They refresh approx every 0.5 ms.
-
-*/
+**********************************************************************************/
 
 #ifndef PressureClass_h
 #define PressureClass__h
