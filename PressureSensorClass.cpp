@@ -26,7 +26,7 @@ void ELVHPressureSensor::readPressureSensor(void){
     pRaw_ = ((uint16_t)(p[0] & 0b00111111) << 8) | (uint16_t)(p[1]);  // raw pressure is next 14 bits. after stripping flag
     Traw_ = ((uint16_t)(p[2]) << 3) | ((uint16_t)(p[3] & 0b11100000) >> 5); // then temperature is next 5 bits
     delayMicroseconds(5);
-    digitalWrite(CSpin_, HIGH);1
+    digitalWrite(CSpin_, HIGH);
     SPI.endTransaction();
 }
 
