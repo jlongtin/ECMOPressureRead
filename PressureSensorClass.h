@@ -37,10 +37,12 @@ class ELVHPressureSensor {
       uint8_t           CSpin_;
       uint32_t          lastReadTime_ = 0;
       pressureUnit      pUnit_;
-      float             pMax_;     // TODO: can I make this a constant?
-      uint16_t          Traw_;     // sensor temperature, raw value from sensor
-      uint16_t          pRaw_;     // sensor pressure, raw value from sensor
-      uint8_t           flag_;     // sensor read flag 
+      float             pMax_;              // TODO: can I make this a constant?
+      uint16_t          Traw_;              // sensor temperature, raw value from sensor
+      uint16_t          pRaw_;             // sensor pressure, raw value from sensor
+      uint8_t           flag_;            // sensor read flag 
+      float             pOffset_ = 0.0;  // pressure offset
+      bool              calcOffset_= true;       // should offset be subtracted before returning measurement?
 
 
   // function prototypes
@@ -48,11 +50,13 @@ class ELVHPressureSensor {
       float convert2Pa(float, pressureUnit);  // converts argument of unit supplied to Pa
       float convertPressure(pressureUnit);    // converts pressure from Pa to provided unit
       float convertTemperature(void);         // converts raw temperature 
+      void setZeroValue(void);                // set reference pressure
     
   public:
       float getP(pressureUnit);
-      float getT();
-      uint8_t getFlag();
+      float getT(void);
+      uint8_t getFlag(void);
+      float getOffset(void);
 
     ELVHPressureSensor (uint8_t pin, float pmax, pressureUnit pu) : CSpin_{pin}, pUnit_{pu}{
         // empty constructor

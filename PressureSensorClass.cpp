@@ -72,6 +72,15 @@ float ELVHPressureSensor::convert2Pa(float p, pressureUnit pUnit){
   }
 }
 
+void ELVHPressureSensor::setZeroValue(void) {   // note: all offsets in native units of Pa
+   constexpr uint8_t IMAX = 10;
+   float x = 0;
+   for (int i = 0; i<IMAX; i++){
+    x += ELVHPressureSensor::getP(Pa);  // get in Pa
+   }
+   pOffset_ /=(float)IMAX;
+}
+
 float ELVHPressureSensor::convertPressure(pressureUnit pu) {  // returns pressure in pressure units pu
   // Convert a raw digital pressure read from the sensor to a floating point value in PSI.
   // Based on the following formula in the datasheet: Pressure(units) = 1.25 x ((P_out_dig - OS_dig) / 2^14) x FSS(units)
@@ -87,8 +96,13 @@ float ELVHPressureSensor::convertTemperature(void) {
 }
 
 float ELVHPressureSensor::getP(pressureUnit pu ){     // does a fresh read of sensor
+  float p;
   ELVHPressureSensor::readPressureSensor();
-  return ELVHPressureSensor::convertPressure(pu);     // return pressure in units pu
+  p  = ELVHPressureSensor::convertPressure(pu);     // return pressure in units pu
+  if (ELVHPressureSensor::pOffset_ == true) {
+    p -= pOffset_;
+  }
+  return p;
 }
 
 float ELVHPressureSensor::getT(void) {                // does a fresh read of sensor
@@ -96,6 +110,9 @@ float ELVHPressureSensor::getT(void) {                // does a fresh read of se
   return ELVHPressureSensor::convertTemperature();    // return temperature in degC
 }
 
+float ELVHPressureSensor::getOffset(void) {           // does NOT do a fresh read of sensor; reports current offset pressure
+  return pOffset_;
+}
 
 uint8_t ELVHPressureSensor::getFlag(void) {           // does NOT do a fresh read of sensor; reports last flag
   return flag_;
